@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>五子棋计分器</title>
+    <style>
+       body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            touch-action: manipulation;
+        }
+
+        .container {
+            display: flex;
+            border: none;
+            border-radius: 15px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            width: 90%;
+            max-width: 600px;
+            position: relative;
+        }
+
+        .player {
+            text-align: center;
+            margin: 0 20px;
+            flex: 1;
+        }
+
+        .player-name {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        .score {
+            font-size: 4em;
+            margin-bottom: 20px;
+            cursor: pointer;
+            padding: 10px 30px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .score:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+        }
+
+        .score:active {
+            transform: translateY(1px);
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+        }
+
+        .button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            background-color: rgba(255, 99, 71, 0.8);
+            color: white;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .button:hover {
+            background-color: rgba(255, 99, 71, 1);
+            transform: translateY(-2px);
+        }
+
+        .button:active {
+            transform: translateY(1px);
+        }
+
+        #reset {
+            position: absolute;
+            bottom: -60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            max-width: 200px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        #reset:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        /* 添加一些动画效果 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .player {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        .player:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        #reset {
+            animation: fadeIn 0.5s ease-out 0.4s forwards;
+            opacity: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="player">
+            <div class="player-name">黑方</div>
+            <div class="score" id="player1-score" onclick="increaseScore('player1')">0</div>
+            <div class="buttons">
+                <button class="button" onclick="decreaseScore('player1')">-</button>
+            </div>
+        </div>
+
+        <div class="player">
+            <div class="player-name">白方</div>
+            <div class="score" id="player2-score" onclick="increaseScore('player2')">0</div>
+            <div class="buttons">
+                <button class="button" onclick="decreaseScore('player2')">-</button>
+            </div>
+        </div>
+
+        <button id="reset" onclick="resetScores()">重置</button>
+    </div>
+
+    <script>
+        // 页面加载后自动全屏
+        document.addEventListener('DOMContentLoaded', () => {
+            try {
+                if (document.documentElement.requestFullscreen) {
+                    document.documentElement.requestFullscreen();
+                } else if (document.documentElement.webkitRequestFullscreen) {
+                    document.documentElement.webkitRequestFullscreen();
+                } else if (document.documentElement.msRequestFullscreen) {
+                    document.documentElement.msRequestFullscreen();
+                }
+            } catch (e) {
+                console.log("全屏模式不可用:", e);
+            }
+        });
+
+        // 禁用双指缩放
+        document.addEventListener('gesturestart', function(e) {
+            e.preventDefault();
+        });
+
+        function increaseScore(player) {
+            let scoreElementId = player + "-score";
+            let scoreElement = document.getElementById(scoreElementId);
+            let score = parseInt(scoreElement.innerText);
+            scoreElement.innerText = score + 1;
+            
+            // 添加点击动画
+            scoreElement.style.transform = 'scale(1.1)';
+            setTimeout(() => {
+                scoreElement.style.transform = 'scale(1)';
+            }, 200);
+
+            // 保存到 localStorage
+            localStorage.setItem(player, scoreElement.innerText);
+        }
+
+        function decreaseScore(player) {
+            let scoreElementId = player + "-score";
+            let scoreElement = document.getElementById(scoreElementId);
+            let score = parseInt(scoreElement.innerText);
+            if (score > 0) {
+                scoreElement.innerText = score - 1;
+                
+                // 添加点击动画
+                scoreElement.style.transform = 'scale(0.9)';
+                setTimeout(() => {
+                    scoreElement.style.transform = 'scale(1)';
+                }, 200);
+
+                // 保存到 localStorage
+                localStorage.setItem(player, scoreElement.innerText);
+            }
+        }
+
+        function resetScores() {
+            const score1 = document.getElementById("player1-score");
+            const score2 = document.getElementById("player2-score");
+            
+            // 添加重置动画
+            score1.style.transform = 'rotate(5deg)';
+            score2.style.transform = 'rotate(-5deg)';
+            setTimeout(() => {
+                score1.style.transform = 'rotate(0)';
+                score2.style.transform = 'rotate(0)';
+            }, 300);
+            
+            score1.innerText = "0";
+            score2.innerText = "0";
+
+            // 清除 localStorage
+            localStorage.removeItem('player1');
+            localStorage.removeItem('player2');
+        }
+
+        // 页面加载时从 localStorage 加载分数
+        window.onload = function() {
+            let player1Score = localStorage.getItem('player1') || "0";
+            let player2Score = localStorage.getItem('player2') || "0";
+            document.getElementById("player1-score").innerText = player1Score;
+            document.getElementById("player2-score").innerText = player2Score;
+        };
+    </script>
+
+</body>
+</html>
